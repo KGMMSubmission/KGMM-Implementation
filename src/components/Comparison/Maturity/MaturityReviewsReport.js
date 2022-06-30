@@ -222,9 +222,9 @@ function MaturityReviewsReport(props) {
 MaturityReviewsReport.propTypes = {
     showMaturityReviewsReportDialog: PropTypes.bool.isRequired,
     toggleMaturityReviewsReportDialog: PropTypes.func.isRequired,
-    reviewsCount: PropTypes.integer.isRequired,
-    mostSelectedReviewNumber: PropTypes.integer.isRequired,
-    maturityLevel: PropTypes.integer.isRequired
+    reviewsCount: PropTypes.number.isRequired,
+    mostSelectedReviewNumber: PropTypes.number.isRequired,
+    maturityLevel: PropTypes.number.isRequired,
     reviewsReportSummary: PropTypes.object.isRequired
 };
 
