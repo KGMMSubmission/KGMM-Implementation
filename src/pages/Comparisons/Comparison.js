@@ -1,12 +1,27 @@
 import { useState, useEffect } from 'react';
 import { Alert, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Button, Badge } from 'reactstrap';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
-import { faEllipsisV, faLightbulb, faHistory, faWindowMaximize, faChartBar, faExternalLinkAlt, faFilter } from '@fortawesome/free-solid-svg-icons';
+import {
+    faEllipsisV,
+    faLightbulb,
+    faHistory,
+    faWindowMaximize,
+    faChartBar,
+    faExternalLinkAlt,
+    faFilter,
+    faComments,
+    faHandshake
+} from '@fortawesome/free-solid-svg-icons';
 import ComparisonLoadingComponent from 'components/Comparison/ComparisonLoadingComponent';
 import ComparisonTable from 'components/Comparison/Comparison';
 import ExportToLatex from 'components/Comparison/Export/ExportToLatex.js';
 import GeneratePdf from 'components/Comparison/Export/GeneratePdf.js';
 import SelectProperties from 'components/Comparison/SelectProperties';
+import MaturityReport from 'components/Comparison/Maturity/MaturityReport';
+import MaturityReviewsReport from 'components/Comparison/Maturity/MaturityReviewsReport';
+import ManageMaturityReviews from 'components/Comparison/Maturity/ManageMaturityReviews';
+import MaturityModelManual  from 'components/Comparison/Maturity/MaturityModelManual';
+import MaturityMinimumNeededReviews from 'components/Comparison/Maturity/MaturityMinimumNeededReviews';
 import ValuePlugins from 'components/ValuePlugins/ValuePlugins';
 import AddContribution from 'components/Comparison/AddContribution/AddContribution';
 import ProvenanceBox from 'components/Comparison/ProvenanceBox/ProvenanceBox';
@@ -47,6 +62,7 @@ import { Helmet } from 'react-helmet';
 import AppliedRule from 'components/Comparison/Filters/AppliedRule';
 import TitleBar from 'components/TitleBar/TitleBar';
 import SaveDraft from 'components/Comparison/SaveDraft/SaveDraft';
+//import ProgressBar from '@ramonak/react-progress-bar';
 
 function Comparison(props) {
     const {
@@ -95,7 +111,6 @@ function Comparison(props) {
 
     const params = useParams();
     const { versions, isLoadingVersions, hasNextVersion, loadVersions } = useComparisonVersions({ comparisonId: params.comparisonId });
-
     useEffect(() => {
         if (params.comparisonId) {
             loadVersions(params.comparisonId);
@@ -107,7 +122,6 @@ function Comparison(props) {
             document.title = `${metaData.title} - Comparison - ORKG`;
         }
     }, [metaData]);
-
     /** adding some additional state for meta data **/
 
     const [cookies, setCookie] = useCookies();
@@ -120,8 +134,11 @@ function Comparison(props) {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [dropdownDensityOpen, setDropdownDensityOpen] = useState(false);
     const [dropdownMethodOpen, setDropdownMethodOpen] = useState(false);
-
     const [showPropertiesDialog, setShowPropertiesDialog] = useState(false);
+    const [showMaturityReportDialog, setShowMaturityReportDialog] = useState(false);
+    const [showMaturityModelManualDialog, setMaturityModelManualDialog] = useState(false);
+    const [showMaturityReviewsReportDialog, setShowMaturityReviewsReportDialog] = useState(false);
+    const [showMaturityMinimumNeededReviewsDialog, setShowMaturityMinimumNeededReviewsDialog] = useState(false);
     const [showLatexDialog, setShowLatexDialog] = useState(false);
     const [showShareDialog, setShowShareDialog] = useState(false);
     const [showPublishDialog, setShowPublishDialog] = useState(false);
@@ -135,6 +152,30 @@ function Comparison(props) {
     /**
      * Is case of an error the user can go to the previous link in history
      */
+
+    const maturityCss = `
+               @media (max-width: 768px) {
+                   .maturityDiv {
+                       display: none;
+                   }
+                   .reviewsDiv {
+                     display: none;
+                   }
+               }
+               @media (min-width: 768px) {
+                  .maturityDiv {
+                      width: 15%;
+                      position: relative;
+                      display: inline-block;
+                  }
+                  .reviewsDiv {
+                    position: absolute;
+                    left: 125px;
+                    /*background-color: green;*/
+                  }
+               }
+              `;
+
     const handleGoBack = () => {
         history.goBack();
     };
@@ -232,7 +273,8 @@ function Comparison(props) {
         '@context': 'https://schema.org',
         '@type': 'WebPage'
     };
-
+    const { maturityLevel, mostSelectedReviewNumber, reviewsData, maturityReportMessage , reviewsCount, maturityStars , uniqueReviewsProperties, reviewsReportSummary, currentVisualizationsCount  } = ManageMaturityReviews({ data: data, metaData: metaData , isPublished: isPublished, url:reverse(ROUTES.MATURITY_REVIEW, { id: metaData?.id || metaData?.hasPreviousVersion?.id }) });
+    console.log(currentVisualizationsCount);
     return (
         <div>
             <Breadcrumbs researchFieldId={metaData?.subject ? metaData?.subject.id : researchField ? researchField.id : null} />
@@ -364,7 +406,47 @@ function Comparison(props) {
                                             </DropdownItem>
                                         </span>
                                     </Tippy>
-
+                                    {typeof metaData?.id!=undefined && typeof metaData?.hasPreviousVersion?.id!=undefined && (
+                                        <>
+                                            <DropdownItem divider />
+                                            <DropdownItem header>Maturity</DropdownItem>
+                                            <Tippy disabled={!isPublished} content={publishedMessage}>
+                                                <span>
+                                                    <DropdownItem onClick={() => setShowMaturityReportDialog(v => !v)}>Maturity report</DropdownItem>
+                                                </span>
+                                            </Tippy>
+                                            <Tippy disabled={!isPublished} content={publishedMessage}>
+                                                <span>
+                                                    <DropdownItem
+                                                        tag={NavLink}
+                                                        exact
+                                                        to={reverse(ROUTES.MATURITY_REVIEW, { id: metaData?.id || metaData?.hasPreviousVersion?.id })}
+                                                        target="_blank"
+                                                        disabled={!isPublished}
+                                                    >
+                                                        Add maturity review
+                                                    </DropdownItem>
+                                                </span>
+                                            </Tippy>
+                                            <Tippy disabled={!isPublished} content={publishedMessage}>
+                                                <span>
+                                                    <DropdownItem onClick={() => setShowMaturityReviewsReportDialog(v => !v)}>
+                                                        Maturity reviews report
+                                                    </DropdownItem>
+                                                </span>
+                                            </Tippy>
+                                            <Tippy disabled={!isPublished} content={publishedMessage}>
+                                                <span>
+                                                    <DropdownItem onClick={() => setMaturityModelManualDialog(v => !v)}>Maturity Model Manual</DropdownItem>
+                                                </span>
+                                            </Tippy>
+                                            <Tippy disabled={!isPublished} content={publishedMessage}>
+                                                <span>
+                                                    <DropdownItem onClick={() => setShowMaturityMinimumNeededReviewsDialog(v => !v)}>Minimum Needed Reviews</DropdownItem>
+                                                </span>
+                                            </Tippy>
+                                        </>
+                                    )}
                                     <DropdownItem divider />
                                     <DropdownItem header>Export</DropdownItem>
                                     <DropdownItem onClick={() => setShowLatexDialog(v => !v)}>Export as LaTeX</DropdownItem>
@@ -477,7 +559,7 @@ function Comparison(props) {
             )}
 
             <ContainerAnimated className="box rounded pt-4 pb-4 ps-5 pe-5 clearfix position-relative" style={containerStyle}>
-                <ShareLinkMarker typeOfLink="comparison" title={metaData?.title} />
+                <ShareLinkMarker typeOfLink="comparison" title={metaData?.title} rightEdgeValue="-45" />
                 {!isLoadingMetaData && (isFailedLoadingComparisonResult || isFailedLoadingMetaData) && (
                     <div>
                         {isFailedLoadingComparisonResult && contributionsList.length < 2 ? (
@@ -514,12 +596,59 @@ function Comparison(props) {
                     {!isFailedLoadingMetaData && !isFailedLoadingComparisonResult && (
                         <div className="p-0 d-flex align-items-start">
                             <div className="flex-grow-1">
-                                <h2 className="h4 mb-4 mt-4">{metaData.title ? metaData.title : 'Compare'}</h2>
+                                <h2 className="h4 mb-4 mt-4">{metaData.title ? metaData.title : 'Compare'} </h2>
 
                                 {!isFailedLoadingMetaData && <ComparisonMetaData metaData={metaData} />}
                             </div>
+                            <style scoped>{maturityCss}</style>
+                            {typeof metaData?.id!=undefined && typeof metaData?.hasPreviousVersion?.id!=undefined && (
+                              <div className="maturityDiv">
+                                  <span>
+                                      <Tippy content={
+                                                        <>
+                                                          {maturityLevel} /5 star(s) Mature. Click to see how to improve it<br />
+                                                        </>
+                                                     }
+                                      >
+                                          <span onClick={() => setShowMaturityReportDialog(v => !v)}>
+                                              {maturityStars}
+                                          </span>
+                                      </Tippy>
+                                  </span>
+                                  <span className="reviewsDiv">
 
-                            {metaData.id && provenance && <ObservatoryBox provenance={provenance} />}
+                                      <Tippy content={
+                                          <>
+                                              {reviewsCount} Review(s) out of {mostSelectedReviewNumber} reviews. Click to see the full report
+                                          </>
+                                      }>
+                                          <span onClick={() => setShowMaturityReviewsReportDialog(v => !v)}>
+                                              <Icon icon={faComments} className="me-1" />
+                                          </span>
+                                      </Tippy>
+                                      {metaData?.id!=undefined && (
+                                      <span>
+                                          <Tippy content="Please help me to review this comparison. Click here to go to the review page">
+                                              <span
+                                                  onClick={e => {
+                                                      if (!props.user) {
+                                                          props.openAuthDialog({ action: 'signin', signInRequired: true });
+                                                      } else {
+                                                          window.open(
+                                                              reverse(ROUTES.MATURITY_REVIEW, { id: metaData?.id || metaData?.hasPreviousVersion?.id })
+                                                          );
+                                                      }
+                                                  }}
+                                              >
+                                                  <Icon icon={faHandshake} className="me-1" />
+                                              </span>
+                                          </Tippy>
+                                      </span>
+                                    )}
+                                  </span>
+                              </div>
+                          )}
+                          {metaData.id && provenance && <ObservatoryBox provenance={provenance} />}
                         </div>
                     )}
                     {!isFailedLoadingMetaData && !isFailedLoadingComparisonResult && (
@@ -624,6 +753,43 @@ function Comparison(props) {
                 generateUrl={generateUrl}
                 toggleProperty={toggleProperty}
                 onSortEnd={onSortPropertiesEnd}
+            />
+            <MaturityMinimumNeededReviews
+                metaData = {metaData}
+                properties={properties}
+                showMaturityMinimumNeededReviewsDialog={showMaturityMinimumNeededReviewsDialog}
+                toggleMaturityMinimumNeededReviewsDialog={() => setShowMaturityMinimumNeededReviewsDialog(v => !v)}
+                toggleMaturityMinimumNeededReviews={toggleProperty}
+            />
+            <MaturityModelManual
+                showMaturityModelManualDialog={showMaturityModelManualDialog}
+                toggleMaturityModelManualDialog={() => setMaturityModelManualDialog(v => !v)}
+                reviewsCount = {reviewsCount}
+                metaData = {metaData}
+                toggleProperty = {toggleProperty}
+                mostSelectedReviewNumber = {mostSelectedReviewNumber}
+            />
+            <MaturityReport
+                showMaturityReportDialog={showMaturityReportDialog}
+                toggleMaturityReportDialog={() => setShowMaturityReportDialog(v => !v)}
+                toggleMaturityReport={toggleProperty}
+                reviewsCount = {reviewsCount}
+                mostSelectedReviewNumber = {mostSelectedReviewNumber}
+                reviewsData = {reviewsData}
+                reviewsReportSummary = {reviewsReportSummary}
+                uniqueReviewsProperties = {uniqueReviewsProperties}
+                maturityReportMessage = {maturityReportMessage}
+                maturityLevel={maturityLevel}
+                currentVisualizationsCount = {currentVisualizationsCount}
+                isPublished = {isPublished}
+            />
+            <MaturityReviewsReport
+                showMaturityReviewsReportDialog={showMaturityReviewsReportDialog}
+                toggleMaturityReviewsReportDialog={() => setShowMaturityReviewsReportDialog(v => !v)}
+                reviewsCount = {reviewsCount}
+                mostSelectedReviewNumber = {mostSelectedReviewNumber}
+                reviewsReportSummary = {reviewsReportSummary}
+                maturityLevel={maturityLevel}
             />
             <Share
                 showDialog={showShareDialog}

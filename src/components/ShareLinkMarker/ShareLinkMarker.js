@@ -9,28 +9,26 @@ import { getFacebookSharerLink, getTwitterSharerLink, getLinkedInSharerLink } fr
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 
-export const ShareSideBox = styled.div`
-    position: absolute;
-    right: -45px;
-    z-index: 20;
-    background-color: #fff;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.03);
-    align-items: center;
-    justify-content: center;
+const ShareLinkMarker = ({ typeOfLink, title, rightEdgeValue }) => {
+    const ShareSideBox = styled.div`
+        position: absolute;
+        z-index: 20;
+        background-color: #fff;
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.03);
+        align-items: center;
+        justify-content: center;
 
-    @media (max-width: 650px) {
-        display: none;
-    }
-`;
-
-const ShareLinkMarker = ({ typeOfLink, title }) => {
+        @media (max-width: 650px) {
+            display: none;
+        }
+    `;
     const [source, target] = useSingleton();
     return (
-        <ShareSideBox className="pt-2 ps-2 pe-2 pb-2">
+        <ShareSideBox className="pt-2 ps-2 pe-2 pb-2" style={{ right: rightEdgeValue + 'px' }}>
             <Tippy placement="left" singleton={source} delay={500} />
             <div className="text-muted mb-1">
                 <small>Share</small>
@@ -71,6 +69,6 @@ const ShareLinkMarker = ({ typeOfLink, title }) => {
     );
 };
 
-ShareLinkMarker.propTypes = { typeOfLink: PropTypes.string.isRequired, title: PropTypes.string };
+ShareLinkMarker.propTypes = { typeOfLink: PropTypes.string.isRequired, title: PropTypes.string, rightEdgeValue: PropTypes.string };
 
 export default ShareLinkMarker;

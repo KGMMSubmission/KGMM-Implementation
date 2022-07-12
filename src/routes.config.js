@@ -66,6 +66,7 @@ import LiteratureLists from 'pages/LiteratureList/LiteratureLists';
 import LiteratureListNew from 'pages/LiteratureList/LiteratureListNew';
 import LiteratureList from 'pages/LiteratureList/LiteratureList';
 import LiteratureListDiff from 'pages/LiteratureList/LiteratureListDiff';
+import MaturityReview from 'components/Comparison/Maturity/MaturityReview';
 
 // use lazy loading of pages that contain large dependencies
 // run "npm run analyze" to ensure the listed dependencies are not loaded elsewhere and thus end up in the bundle
@@ -213,7 +214,11 @@ const routes = [
         exact: true,
         component: Comparisons
     },
-
+    {
+        path: ROUTES.MATURITY_REVIEW,
+        exact: true,
+        component: requireAuthentication(MaturityReview)
+    },
     {
         path: ROUTES.VISUALIZATIONS,
         exact: true,

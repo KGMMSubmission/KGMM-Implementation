@@ -54,7 +54,6 @@ const FilterButton = styled(Button)`
 const PropertyValue = ({ id, label, property, similar, filterControlData, updateRulesOfProperty, embeddedMode, group, grouped = false }) => {
     const [showStatementBrowser, setShowStatementBrowser] = useState(false);
     const [showFilterDialog, setShowFilterDialog] = useState(false);
-
     const updateRulesFactory = newRules => updateRulesOfProperty(newRules, id);
 
     const handleOpenStatementBrowser = () => {

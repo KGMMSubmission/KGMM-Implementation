@@ -384,7 +384,7 @@ function Publish(props) {
                     <FormGroup>
                         <div>
                             <Tooltip
-                                message={`A DOI ${env('DATACITE_DOI_PREFIX')}/${props.comparisonId} 
+                                message={`A DOI ${env('DATACITE_DOI_PREFIX')}/${props.comparisonId}
                                 will be assigned to published comparison and it cannot be changed in future.`}
                             >
                                 <StyledCustomInput

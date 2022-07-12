@@ -1,4 +1,4 @@
-import { faPlusCircle, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle, faExternalLinkAlt, faComments } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { contributionsRemoved, loadContributions } from 'slices/contributionEditorSlice';
 import CreateProperty from 'components/ContributionEditor/CreateProperty';
@@ -9,6 +9,7 @@ import AddContribution from 'components/Comparison/AddContribution/AddContributi
 import TableScrollContainer from 'components/Comparison/TableScrollContainer';
 import CreateContributionModal from 'components/CreateContributionModal/CreateContributionModal';
 import CreatePaperModal from 'components/CreatePaperModal/CreatePaperModal';
+import useComparison from 'components/Comparison/hooks/useComparison';
 import routes from 'constants/routes';
 import { reverse } from 'named-urls';
 import queryString from 'query-string';
@@ -19,6 +20,7 @@ import { Link } from 'react-router-dom';
 import env from '@beam-australia/react-env';
 import { Alert, Button, Container } from 'reactstrap';
 import TitleBar from 'components/TitleBar/TitleBar';
+import Tippy from '@tippyjs/react';
 
 const ContributionEditor = () => {
     const [isOpenAddContribution, setIsOpenAddContribution] = useState(false);
@@ -41,6 +43,8 @@ const ContributionEditor = () => {
         );
     });
     const hasPreviousVersion = queryString.parse(location.search).hasPreviousVersion;
+
+    const { properties, publicURL,toggleProperty, generateUrl, onSortPropertiesEnd } = useComparison({});
 
     useEffect(() => {
         document.title = 'Contribution editor - ORKG';
@@ -91,7 +95,6 @@ const ContributionEditor = () => {
 
     // if is loading and there are no contributions in the store, it means it is loading for the first time
     const isLoadingInit = Object.keys(contributions).length === 0 && isLoading;
-
     return (
         <>
             <TitleBar
@@ -147,7 +150,6 @@ const ContributionEditor = () => {
                 )}
                 {hasFailed && <Alert color="danger">An error has occurred while loading the specified contributions</Alert>}
             </Container>
-
             {isOpenAddContribution && (
                 <AddContribution
                     allowCreate
@@ -158,7 +160,6 @@ const ContributionEditor = () => {
                     onCreatePaper={handleOpenCreatePaperModal}
                 />
             )}
-
             {isOpenCreateContribution && (
                 <CreateContributionModal
                     isOpen
@@ -167,7 +168,6 @@ const ContributionEditor = () => {
                     paperId={createContributionPaperId}
                 />
             )}
-
             {isOpenCreatePaper && (
                 <CreatePaperModal
                     isOpen

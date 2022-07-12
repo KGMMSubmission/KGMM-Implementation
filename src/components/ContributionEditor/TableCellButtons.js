@@ -1,4 +1,4 @@
-import { faPen, faTrash, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrash, faCheck, faTimes, faExclamation } from '@fortawesome/free-solid-svg-icons';
 import StatementActionButton from 'components/StatementBrowser/StatementActionButton/StatementActionButton';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
@@ -29,7 +29,7 @@ const TableCellButtons = ({ onEdit, onDelete, backgroundColor, style }) => {
 
     return (
         <ButtonsContainer style={{ backgroundColor, ...style }} className={buttonClasses}>
-            <StatementActionButton title={onEdit ? 'Edit' : 'This item cannot be edited'} icon={faPen} action={onEdit} isDisabled={!onEdit} />
+            <StatementActionButton title={onEdit ? 'Edit' : 'This item cannot be editedd'} icon={faPen} action={onEdit} isDisabled={!onEdit} />
             <StatementActionButton
                 title={onDelete ? 'Delete' : 'This item cannot be deleted'}
                 icon={faTrash}

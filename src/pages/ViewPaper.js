@@ -142,10 +142,10 @@ const ViewPaper = () => {
                         </EditModeHeader>
                     )}
                     <Container
-                        className={`box pt-md-4 pb-md-4 ps-md-5 pe-md-5 pt-sm-2 pb-sm-2 ps-sm-2 pe-sm-2 clearfix position-relative 
+                        className={`box pt-md-4 pb-md-4 ps-md-5 pe-md-5 pt-sm-2 pb-sm-2 ps-sm-2 pe-sm-2 clearfix position-relative
                                 ${editMode ? 'rounded-bottom' : 'rounded'}`}
                     >
-                        {!isLoading && <ShareLinkMarker typeOfLink="paper" title={viewPaper.paperResource.label} />}
+                        {!isLoading && <ShareLinkMarker typeOfLink="paper" title={viewPaper.paperResource.label}  rightEdgeValue="-51" />}
 
                         {isLoading && (
                             <ContentLoader

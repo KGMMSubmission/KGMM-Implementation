@@ -62,13 +62,13 @@ const GlobalStyle = createGlobalStyle`
         .woot-widget-bubble.woot-elements--right{
             bottom: ${props => (!props.cookieInfoDismissed ? '80px' : '14px')}
         }
-    }  
+    }
     @media (max-width: 480px) {
         .woot-widget-bubble.woot-elements--right{
             bottom: ${props => (!props.cookieInfoDismissed ? '150px' : '14px')}
         }
-    }  
-    
+    }
+
 `;
 
 const StyledLink = styled(Link)`
